@@ -1,0 +1,50 @@
+version: "3.9"
+
+services:
+  api.testelaravel.test:
+    container_name: api.testelaravel.test
+    tty: true
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        APP_STAGE: "dev"
+    environment:
+      PHP_IDE_CONFIG: "serverName=api.testelaravel.test"
+    volumes:
+      - ./src:/src
+    ports:
+      - "80:80"
+      - "5173:5173"
+    networks:
+      - bubble
+
+  mysql.testelaravel.test:
+    container_name: mysql.testelaravel.test
+    image: mysql:8.1
+    command: --default-authentication-plugin=caching_sha2_password
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: bubble
+    volumes:
+      - mysql:/var/lib/mysql
+    networks:
+      - bubble
+  
+  phpmyadmin.testelaravel.test:
+    container_name: phpmyadmin.testelaravel.test
+    image: phpmyadmin:5.2
+    ports:
+      - 8080:80
+    environment:
+      - PMA_HOST=mysql
+    networks:
+      - bubble
+networks:
+  bubble:
+    external: true
+    
+volumes:
+  mysql:
+    name: mysql
